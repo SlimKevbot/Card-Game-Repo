@@ -3,14 +3,15 @@
 
 import csv
 import os
-from PIL import Image, ImageDraw, ImageFont
+import textwrap
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 def main():
     #do something
-    csv_path = 'card_table.csv'
+    csv_path = 'card_table2.csv'
     blankCardPath = 'mtgcard.jpg'
     output_folder = 'deck1'
-    num_cards = 10
+    num_cards = 69
 
     with open(csv_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -30,24 +31,39 @@ def main():
 
 def create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, outputPath, output_folder):
     #open the template image
-    blankCard = Image.open(blankCardPath)
+    blankCard = Image.open(blankCardPath).convert("RGBA") #allows transparency
     #get a drawing context
     draw = ImageDraw.Draw(blankCard)
     #load font
-    font_path = "/path/to/DejaVuSans.ttf"
-    myFont = ImageFont.truetype("arial.ttf", 30)
+    regFont = ImageFont.truetype("arial.ttf", 30)
+    boldFont = ImageFont.truetype("arialbd.ttf", 30)
+    italFont = ImageFont.truetype("ariali.ttf", 30)
     #define the text position
     trueNamePos = (65,60)
     tagsPos = (70,590) #the card class type
     rulesPos = (70, 650)
-    flavorTextPos = (65, 700)
-    manaPos = (550, 925)
+    wrappedRules = textwrap.fill(rules, width=35)  # Adjust the width as needed
+    flavorTextPos = (70, 800)
+    wrappedFlavor = textwrap.fill(flavorText, width=35)
+    manaPos = (590, 925)
     #draw the text on the image
-    draw.text(trueNamePos, f"Name: {trueName}", font=myFont, fill="red")
-    draw.text(rulesPos, f"rules: {rules}", font=myFont, fill="red")
-    draw.text(flavorTextPos, f"Flavor: {flavorText}", font=myFont, fill="red")
-    draw.text(manaPos, f"Mana: {mana}", font=myFont, fill="red")
-    draw.text(tagsPos, f"Tags: {tags}", font=myFont, fill="red")
+    draw.text(trueNamePos, f"Name: {trueName}", font=regFont, fill="red")
+    draw.text(rulesPos, f"rules: {wrappedRules}", font=regFont, fill="red")
+    draw.text(flavorTextPos, f"Flavor: {wrappedFlavor}", font=italFont, fill="red")
+    draw.text(manaPos, f"{mana}", font=boldFont, fill="red")
+    draw.text(tagsPos, f"School: {tags}", font=italFont, fill="red")
+    #draw the Sin Icon on the card
+    sin_image_path = f'{tags.lower()}.png'
+    if os.path.exists(sin_image_path):
+        sin_image = Image.open(sin_image_path).convert("RGBA")
+         # Resize the suit image to fit within the template
+        max_width = blankCard.width - 2 * 350  # Adjust the margin as needed
+        max_height = blankCard.height - 2 * 350
+        sin_image.thumbnail((max_width, max_height))
+
+        # Create a mask from the suit image's alpha channel
+        #mask = ImageOps.extrude(sin_image.split()[3], border=1, fill=0)
+        blankCard.paste(sin_image, (625, 62), sin_image)  # Adjust the position as needed
     
     # Check if the file already exists, add a counter to the filename if needed
     counter = 1
@@ -73,10 +89,11 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             mana = row['Mana Cost']
             flavorText = row['Flavor Text']
             #generate the unique file name for each card image
-            print(f"#{i} card generating.")
+            #print(f"#{i} card generating.")
             outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
             #call the create a card function
             create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
+        print(f"{i+1} cards generated")
 
 # Using the special variable  
 # __name__ 
