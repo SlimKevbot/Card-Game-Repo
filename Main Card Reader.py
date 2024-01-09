@@ -29,7 +29,7 @@ def main():
 
 
 
-def create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, outputPath, output_folder):
+def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder):
     #open the template image
     blankCard = Image.open(blankCardPath).convert("RGBA") #allows transparency
     #get a drawing context
@@ -40,7 +40,8 @@ def create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, ou
     italFont = ImageFont.truetype("ariali.ttf", 30)
     #define the text position
     trueNamePos = (65,60)
-    tagsPos = (70,590) #the card class type
+    #tagsPos = (70,590) #the card school type
+    cardTypePos = (70,590)#if spell or modifier
     rulesPos = (70, 650)
     wrappedRules = textwrap.fill(rules, width=35)  # Adjust the width as needed
     flavorTextPos = (70, 800)
@@ -51,7 +52,9 @@ def create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, ou
     draw.text(rulesPos, f"rules: {wrappedRules}", font=regFont, fill="red")
     draw.text(flavorTextPos, f"Flavor: {wrappedFlavor}", font=italFont, fill="red")
     draw.text(manaPos, f"{mana}", font=boldFont, fill="red")
-    draw.text(tagsPos, f"School: {tags}", font=italFont, fill="red")
+    #draw.text(tagsPos, f"School: {tags}", font=italFont, fill="red")
+    draw.text(cardTypePos, f"Type: {cardType}", font=italFont, fill="red")
+    
     #draw the Sin Icon on the card
     sin_image_path = f'{tags.lower()}.png'
     if os.path.exists(sin_image_path):
@@ -84,7 +87,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             trueName = row['Specific Card Name']
             tags = row['Tags']
             rules = row['Rules Text']
-            card_type = row['Card Type']
+            cardType = row['Card Type']
             card_func = row['Card Functionality Type']
             mana = row['Mana Cost']
             flavorText = row['Flavor Text']
@@ -92,7 +95,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             #print(f"#{i} card generating.")
             outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
             #call the create a card function
-            create_card_image(trueName, tags, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
+            create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
         print(f"{i+1} cards generated")
 
 # Using the special variable  
