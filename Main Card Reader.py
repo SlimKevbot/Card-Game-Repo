@@ -104,7 +104,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             tags = row['Tags']
             rules = row['Rules Text']
             cardType = row['Card Type']
-            card_func = row['Card Functionality Type']
+            #card_func = row['Card Functionality Type']
             mana = row['Mana Cost']
             flavorText = row['Flavor Text']
             #generate the unique file name for each card image
