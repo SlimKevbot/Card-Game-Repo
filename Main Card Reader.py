@@ -4,14 +4,29 @@
 import csv
 import os
 import textwrap
+import shutil
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 def main():
     #do something
-    csv_path = 'card_table2.csv'
+    csv_path = 'input_card_table.csv'
     blankCardPath = 'mtgcard.jpg'
     output_folder = 'deck1'
-    num_cards = 69
+    num_cards = 3
+    if os.path.exists(output_folder):
+        # Folder exists, empty its contents
+        for file_name in os.listdir(output_folder):
+            file_path = os.path.join(output_folder, file_name)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f"Failed to delete {file_path}. Reason: {e}")
+    else:
+        # Folder doesn't exist, create it
+        os.makedirs(output_folder)
 
     with open(csv_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -56,7 +71,7 @@ def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCa
     draw.text(cardTypePos, f"Type: {cardType}", font=italFont, fill="red")
     
     #draw the Sin Icon on the card
-    sin_image_path = f'{tags.lower()}.png'
+    sin_image_path = f'sin/{tags.lower()}.png'
     if os.path.exists(sin_image_path):
         sin_image = Image.open(sin_image_path).convert("RGBA")
          # Resize the suit image to fit within the template
@@ -78,12 +93,13 @@ def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCa
     blankCard.save(outputPath)
 
 def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
-    with open(csv_path, 'r') as csv_file:
+    with open(csv_path, 'r', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
+        print(reader.fieldnames)
         for i, row in enumerate(reader):
             if i >= num_cards:
                 break
-            generalName = row['ï»¿General Name']
+            #generalName = row['\ufeffGeneral Name']
             trueName = row['Specific Card Name']
             tags = row['Tags']
             rules = row['Rules Text']
@@ -96,7 +112,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
             #call the create a card function
             create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
-        print(f"{i+1} cards generated")
+        print(f"{i} cards generated")
 
 # Using the special variable  
 # __name__ 
