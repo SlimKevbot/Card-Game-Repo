@@ -12,7 +12,7 @@ def main():
     csv_path = 'input_card_table.csv'
     blankCardPath = 'mtgcard.jpg'
     output_folder = 'deck1'
-    num_cards = 69
+    num_cards = 6
     if os.path.exists(output_folder):
         # Folder exists, empty its contents
         for file_name in os.listdir(output_folder):
@@ -96,7 +96,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
         for i, row in enumerate(reader):
             if i >= num_cards:
                 break
-            trueName = row['Specific Card Name']
+            trueName = row['Specific Card Name'].lower()
             tags = row['Tags']
             rules = row['Rules Text']
             cardType = row['Card Type']
