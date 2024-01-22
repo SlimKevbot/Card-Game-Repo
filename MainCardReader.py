@@ -11,7 +11,7 @@ def main():
     #initialized
     csv_path = 'input_card_table.csv'
     blankCardPath = 'mtgcard.jpg'
-    output_folder = 'deck1'
+    output_folder = 'blankDeck'
     num_cards = 69
     if os.path.exists(output_folder):
         # Folder exists, empty its contents
