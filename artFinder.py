@@ -43,6 +43,7 @@ def openArt(outputFolder, artFolder, blankDeckFolder):
             blankCardImage.paste(myArtImage, (150, 125), myArtImage)  # Adjust the position as needed
             #Save the generated image in the Final Folder
             blankCardImage.save(myOutputPath) #this just needs to be a path name. We are saving the image as this path name
+    print("All art processed")
 # Using the special variable  
 # __name__ 
 if __name__=="__main__": 

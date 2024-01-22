@@ -106,7 +106,7 @@ def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
             outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
             #call the create a card function
             create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
-        print(f"{i} cards generated")
+        print("Cards generated")
 
 # Using the special variable  
 # __name__ 
