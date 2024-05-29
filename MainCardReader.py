@@ -27,21 +27,26 @@ def main():
     else:
         # Folder doesn't exist, create it
         os.makedirs(output_folder)
-
-    #with open(csv_path) as csv_file:
-    #    csv_reader = csv.reader(csv_file, delimiter=',')
-    #    line_count = 0
-    #    for row in csv_reader:
-    #        if line_count ==0:
-    #            print(f'Column names are {",".join(row)}')
-    #            line_count += 1 #this ensures that the first row is named so that we understand what is going on
-    #        else:
-    #            print(f'card {line_count} {",". join(row)} ')
-    #            line_count += 1
-    #    print(f'Processesd {line_count} lines.')
-
     generate_cards(csv_path, blankCardPath, output_folder, num_cards) #call generate card function
 
+def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
+    with open(csv_path, 'r', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file)
+        print(reader.fieldnames)
+        for i, row in enumerate(reader):
+            if i >= num_cards:
+                break
+            trueName = row['Specific Card Name'].lower()
+            tags = row['Tags']
+            rules = row['Rules Text']
+            cardType = row['Card Type']
+            mana = row['Mana Cost']
+            flavorText = row['Flavor Text']
+            #generate the unique file name for each card image
+            outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
+            #call the create a card function
+            create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
+        print("Cards generated")
 
 
 def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder):
@@ -72,7 +77,7 @@ def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCa
     sin_image_path = f'sin/{tags.lower()}.png'
     if os.path.exists(sin_image_path):
         sin_image = Image.open(sin_image_path).convert("RGBA")
-         # Resize the suit image to fit within the template
+         # Resize the image to fit within the template
         max_width = blankCard.width - 2 * 350  # Adjust the margin as needed
         max_height = blankCard.height - 2 * 350
         sin_image.thumbnail((max_width, max_height))
@@ -80,7 +85,7 @@ def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCa
         # use the sin image as a mask to retain transparency
         blankCard.paste(sin_image, (625, 62), sin_image)  # Adjust the position as needed
     
-    # Check if the card image already exists, add a counter to the filename if needed
+    # Check if the card already exists, add a counter to the filename if needed
     counter = 1
     while os.path.exists(outputPath):
         outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_{counter}_card.png"
@@ -88,26 +93,6 @@ def create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCa
 
     #save the card with the specific card name as the image name
     blankCard.save(outputPath)
-
-def generate_cards(csv_path, blankCardPath, output_folder, num_cards):
-    with open(csv_path, 'r', encoding='utf-8') as csv_file:
-        reader = csv.DictReader(csv_file)
-        print(reader.fieldnames)
-        for i, row in enumerate(reader):
-            if i >= num_cards:
-                break
-            trueName = row['Specific Card Name'].lower()
-            tags = row['Tags']
-            rules = row['Rules Text']
-            cardType = row['Card Type']
-            mana = row['Mana Cost']
-            flavorText = row['Flavor Text']
-            #generate the unique file name for each card image
-            outputPath = f"{output_folder}/{trueName.replace(' ', '_')}_card.png"
-            #call the create a card function
-            create_card_image(trueName, tags, cardType, rules, mana, flavorText, blankCardPath, outputPath, output_folder)
-        print("Cards generated")
-
 # Using the special variable  
 # __name__ 
 if __name__=="__main__": 
